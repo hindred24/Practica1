@@ -1,5 +1,6 @@
 package logico;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
@@ -10,57 +11,39 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        int i=0;
-        int j=0;
-        int k1=0;
-        int k2=0;
-        int l=0;
+        System.out.println("Digite una URL:");
+        String URL;
+        Scanner entrada = new Scanner(System.in);
+        URL = entrada.nextLine();
 
-        Document doc = Jsoup.connect("https://www.pucmm.edu.do/").get();
+        Document doc = Jsoup.connect(URL).get();
 
-        Elements lineas = doc.select("br");
+        int lineas = doc.html().split("\r\n|\r|\n").length;
         Elements parrafos = doc.select("p");
         Elements imagenes = doc.select("img");
         Elements formularios = doc.select("form");
 
-        for (Element linea : lineas) {
-            l++;
-        }
-        System.out.println("lineas: "+l);
-
-        for (Element parrafo : parrafos) {
-            i++;
-        }
-        System.out.println("parrafos: "+i);
-
-        for (Element imagen : imagenes) {
-            j++;
-        }
-        System.out.println("imagenes "+j);
-
-        ArrayList<Elements> inputs = new ArrayList<Elements>();
-
-        for (Element form : formularios) {
-            inputs.add(form.getElementsByTag("input"));
-        }
-        for (Elements items : inputs) {
-            for (Element input : items) {
-                String type = input.attr("type");
-                System.out.println("Tipo: " + type + " - Campo: " + input);
-            }
-        }
+        System.out.println("lineas: "+lineas);
+        System.out.println("parrafos: "+parrafos.size());
+        System.out.println("imagenes: "+imagenes.size());
+        System.out.println("formularios: "+formularios.size());
+        System.out.println("formularios POST:"+doc.select("form[method=POST]").size());
+        System.out.println("formularios GET:"+doc.select("form[method=GET]").size());
 
         for (Element formulario : formularios) {
-                k1++;
-                if(formulario.hasAttr("GET"))
-                    k2++;
+            System.out.println("Formulario input: "+formulario.select("input")+"\n");
+            Connection.Response respuesta = Jsoup.connect(URL)
+                    .method(Connection.Method.POST)
+                    .data("Asignatura", "Practica1")
+                    .header("Matricula","20150664")
+                    .execute();
+            System.out.println("Respuesta del servidor: "+respuesta.statusCode()+" OK\n");
         }
-        System.out.println("formularios GET: "+k1+"\nformularios POST:"+k2);
     }
 
 }
