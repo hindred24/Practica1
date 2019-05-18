@@ -6,7 +6,7 @@ plugins {
 group 'edu.pucmm'
 version '1.0-SNAPSHOT'
 
-mainClassName = "logico.Main"
+mainClassName = "edu.pucmm.Main"
 
 sourceCompatibility = 1.8
 
